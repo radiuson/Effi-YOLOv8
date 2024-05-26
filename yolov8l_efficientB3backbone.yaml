@@ -1,0 +1,71 @@
+# Ultralytics YOLO 🚀, AGPL-3.0 license
+# YOLOv8 object detection model with P3-P5 outputs. For Usage examples see https://docs.ultralytics.com/tasks/detect
+
+# Parameters
+nc: 5 # number of classes
+scales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'
+  # [depth, width, max_channels]
+  n: [0.33, 0.25, 1024] # YOLOv8n summary: 225 layers,  3157200 parameters,  3157184 gradients,   8.9 GFLOPs
+  s: [0.33, 0.50, 1024] # YOLOv8s summary: 225 layers, 11166560 parameters, 11166544 gradients,  28.8 GFLOPs
+  m: [0.67, 0.75, 768] # YOLOv8m summary: 295 layers, 25902640 parameters, 25902624 gradients,  79.3 GFLOPs
+  l: [1.00, 1.00, 512] # YOLOv8l summary: 365 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPs
+  x: [1.00, 1.25, 512] # YOLOv8x summary: 365 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPs
+
+# YOLOv8.0n backbone
+backbone:
+  # [from, repeats, module, args]
+  # MBConv arg = [out_channels,expand_ratio,kernel,stride,num_layers,stage_block_id,total_stage_block]
+  - [-1, 1, Conv, [32, 3, 2]]
+
+  - [-1, 1, MBConv, [24, 1, 3, 1, 1, 0, 26]]
+  - [-1, 1, MBConv, [24, 1, 3, 1, 1, 1, 26]]
+
+  - [-1, 1, MBConv, [32, 6, 3, 2, 1, 2, 26]]
+  - [-1, 1, MBConv, [32, 6, 3, 1, 1, 3, 26]]
+  - [-1, 1, MBConv, [32, 6, 3, 1, 1, 4, 26]]
+
+  - [-1, 1, MBConv, [48, 6, 5, 2, 1, 5, 26]]
+  - [-1, 1, MBConv, [48, 6, 5, 1, 1, 6, 26]]
+  - [-1, 1, MBConv, [48, 6, 5, 1, 1, 7, 26]]
+
+  - [-1, 1, MBConv, [96, 6, 3, 2, 1, 8, 26]]
+  - [-1, 1, MBConv, [96, 6, 3, 1, 1, 9, 26]]
+  - [-1, 1, MBConv, [96, 6, 3, 1, 1, 10, 26]]
+  - [-1, 1, MBConv, [96, 6, 3, 1, 1, 11, 26]]
+  - [-1, 1, MBConv, [96, 6, 3, 1, 1, 12, 26]]
+
+  - [-1, 1, MBConv, [136, 6, 5, 1, 1, 13, 26]]
+  - [-1, 1, MBConv, [136, 6, 5, 1, 1, 14, 26]]
+  - [-1, 1, MBConv, [136, 6, 5, 1, 1, 15, 26]]
+  - [-1, 1, MBConv, [136, 6, 5, 1, 1, 16, 26]]
+  - [-1, 1, MBConv, [136, 6, 5, 1, 1, 17, 26]]
+
+  - [-1, 1, MBConv, [232, 6, 5, 2, 1, 18, 26]]
+  - [-1, 1, MBConv, [232, 6, 5, 1, 1, 19, 26]]
+  - [-1, 1, MBConv, [232, 6, 5, 1, 1, 20, 26]]
+  - [-1, 1, MBConv, [232, 6, 5, 1, 1, 21, 26]]
+  - [-1, 1, MBConv, [232, 6, 5, 1, 1, 22, 26]]
+  - [-1, 1, MBConv, [232, 6, 5, 1, 1, 23, 26]]
+
+  - [-1, 1, MBConv, [384, 6, 3, 1, 1, 24, 26]]
+  - [-1, 1, MBConv, [384, 6, 3, 1, 1, 25, 26]]
+
+# YOLOv8.0n head
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 24
+  - [[-1, 18], 1, Concat, [1]] #  cat backbone P4
+  - [-1, 3, C2f, [232]] # 29
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]] # 20
+  - [[-1, 8], 1, Concat, [1]] # 21 cat backbone P3
+  - [-1, 3, C2f, [136]] # 32 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]] # 23
+  - [[-1, 29], 1, Concat, [1]] # 24 cat head P4
+  - [-1, 3, C2f, [232]] # 35 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]] # 26
+  - [[-1, 26], 1, Concat, [1]] # 27 cat head P5
+  - [-1, 3, C2f, [384]] # 38 (P5/32-large)
+
+  - [[32, 35, 38], 1, Detect, [nc]] # 39 Detect(P3, P4, P5)
