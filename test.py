@@ -2,8 +2,6 @@ from ultralytics import YOLO
 
 MODEL_PATH = "/home/ihpc4090/ZRQ/yolov8_zrq/"
 MODEL_WEIGHT = "/home/ihpc4090/ZRQ/yolov8_zrq/runs/detect/"
-DATASET_PATH_VEHICLE = "/home/ihpc4090/ZRQ/datasets/VehiclesDetectionDataset/dataset.yaml"
-DATASET_PATH_TACO = "/home/ihpc4090/ZRQ/datasets/taco_dataset/data.yaml"
 DATASET_PATH_TOMATO = "/home/ihpc4090/ZRQ/datasets/TomatoLeaf/data.yaml"
 
 # model = YOLO(model=MODEL_PATH+"yolov8n_efficientB0backbone.yaml")
