@@ -4,4 +4,5 @@ Code repository for paper "An Improved YOLOv8 Tomato Leaf Disease Detector Based
 Readme to be finished
 ## Installation
 1. Clone the repository with command below
-$ git clone
+
+\code $ git clone
