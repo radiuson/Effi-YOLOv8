@@ -5,4 +5,4 @@ Readme to be finished
 ## Installation
 1. Clone the repository with command below
 
-\code $ git clone
+$ git clone
